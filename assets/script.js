@@ -15,7 +15,6 @@ let formSubmitHandler = function (event) {
 
   if (cityName) {
     locationFunction(cityName);
-    displayWeatherReport();
 
     // clear old content
     rightContainerTop.textContent = "";
@@ -66,35 +65,56 @@ let getWeatherReport = function (lat, lon) {
     })
  };
 
-let displayWeatherReport = function () {
+let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex) {
 
 let rightTopDiv = document.createElement("div")
+let temp = document.createElement("p")
+temp.innerText = "Temperature: " + temperature
+let humid = document.createElement("p")
+humid.innerText = "Humidity: " + humidity
+let wind = document.createElement("p")
+wind.innerText = "Windspeed: " + windSpeed
+let uv = document.createElement("p")
+uv.innerText = "UV Index: " + uvIndex
 
+rightTopDiv.appendChild(temp);
+rightTopDiv.appendChild(humid);
+rightTopDiv.appendChild(wind);
+rightTopDiv.appendChild(uv);
+rightContainerTop.appendChild(rightTopDiv);
 
-
-// rightTopDiv.appendChild()
-// rightContainerTop.appendChild(rightTopDiv)
+if (uvIndex < 2) {
+  uv.classList.add("low")
+} else if (uvIndex < 5) {
+  uv.classList.add("moderate")
+} else if (uvIndex < 7) {
+  uv.classList.add("high")
+} else if (uvIndex < 10) {
+  uv.classList.add("veryHigh")
+} else {
+  uv.classList.add("Extreme")
+}
 };
 
 
-// let forecast = function(lat, lon) {
-// let forecastUrl = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${APIkey}`
-// }
-
-// fetch(forecastUrl)
-// .then(function(response){
-//     return response.json();
-// })
-// .then(function(data){
-//     console.log(data);
+let forecast = function(lat, lon) {
+let forecastUrl = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIkey}}`
 
 
-// let forecastDiv = document.createElement("div")
+fetch(forecastUrl)
+.then(function(response){
+    return response.json();
+})
+.then(function(data){
+    console.log(data);
 
 
-// forecastDiv.appendChild()
-// rightContainerBottom.appendChild(forecastDiv)
-// })
+let forecastDiv = document.createElement("div")
 
 
+forecastDiv.appendChild()
+rightContainerBottom.appendChild(forecastDiv)
+})
+
+}
 inputSearchEl.addEventListener("submit", formSubmitHandler);
