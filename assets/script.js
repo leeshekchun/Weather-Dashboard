@@ -65,9 +65,14 @@ let getWeatherReport = function (lat, lon) {
     })
  };
 
-let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex) {
+let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName) {
 
 let rightTopDiv = document.createElement("div")
+
+let targetCity = document.createElement("h2")
+targetCity.innerText = cityName
+let currentDate = document.createElement("h2")
+currentDate.innerText = new Date;
 let temp = document.createElement("p")
 temp.innerText = "Temperature: " + temperature
 let humid = document.createElement("p")
@@ -77,6 +82,8 @@ wind.innerText = "Windspeed: " + windSpeed
 let uv = document.createElement("p")
 uv.innerText = "UV Index: " + uvIndex
 
+rightTopDiv.appendChild(targetCity);
+rightTopDiv.appendChild(currentDate);
 rightTopDiv.appendChild(temp);
 rightTopDiv.appendChild(humid);
 rightTopDiv.appendChild(wind);
