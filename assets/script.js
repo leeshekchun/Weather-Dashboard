@@ -3,6 +3,7 @@ let cityNameEl = document.querySelector("#city");
 let searchHistory = document.querySelector("#city-history");
 let rightContainerTop = document.querySelector(".right-top");
 let rightContainerBottom = document.querySelector(".right-bottom");
+let APIkey = "c7e0e04a00149ed8c81b5f6dfbaa9ac7";
 
 //prevent page for refreshing
 let formSubmitHandler = function (event) {
@@ -13,7 +14,8 @@ let formSubmitHandler = function (event) {
   console.log(cityName);
 
   if (cityName) {
-    getWeatherReport(cityName);
+    locationFunction(cityName);
+    displayWeatherReport();
 
     // clear old content
     rightContainerTop.textContent = "";
@@ -23,29 +25,76 @@ let formSubmitHandler = function (event) {
   }
 };
 
-let getWeatherReport = function (city) {
-  // format the weather api url
-  let apiUrl = "https://api.openweathermap.org/data/2.5/onecall?";
+let locationFunction = function (cityName) {
+  let locationApi = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${APIkey}`;
 
-  fetch(apiUrl)
-    .then(function (response) {
-      //request was successful
-      if (response.ok) {
-        response.json().then(function(data) {
-          displayWeatherReport(data, city);
-        });
-      } else {
-        alert("Error: " + response.statusText);
-      }
-    })
-    .catch(function(error) {
-      alert("Unable to connect to Weather Report");
-    });
+  fetch(locationApi)
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(data){
+    console.log(data);
+    let lat = data[0].lat;
+    let lon = data[0].lon;
+    getWeatherReport(lat, lon);
+  });
 };
 
-let displayWeatherReport = function() {
-    // check if api returned any weather report
-    
-}
+let getWeatherReport = function (lat, lon) {
+  // format the weather api url
+  let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${APIkey}`;
+
+  fetch(apiUrl)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data){
+      console.log(data);
+
+      let weatherIcon = data.current.weather[0].icon
+      console.log(weatherIcon)
+      let temperature = data.current.temp + "°F";
+      console.log(temperature)
+      let humidity = data.current.humidity + "%";
+      console.log(humidity)
+      let windSpeed = data.current.wind_speed + "mph";
+      console.log(windSpeed)
+      let uvIndex = data.current.uvi;
+      console.log(uvIndex)
+
+      displayWeatherReport(weatherIcon, temperature, humidity, windSpeed, uvIndex);
+    })
+ };
+
+let displayWeatherReport = function () {
+
+let rightTopDiv = document.createElement("div")
+
+
+
+// rightTopDiv.appendChild()
+// rightContainerTop.appendChild(rightTopDiv)
+};
+
+
+// let forecast = function(lat, lon) {
+// let forecastUrl = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${APIkey}`
+// }
+
+// fetch(forecastUrl)
+// .then(function(response){
+//     return response.json();
+// })
+// .then(function(data){
+//     console.log(data);
+
+
+// let forecastDiv = document.createElement("div")
+
+
+// forecastDiv.appendChild()
+// rightContainerBottom.appendChild(forecastDiv)
+// })
+
 
 inputSearchEl.addEventListener("submit", formSubmitHandler);
