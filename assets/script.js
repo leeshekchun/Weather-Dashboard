@@ -4,13 +4,13 @@ let searchHistory = document.querySelector("#city-history");
 let rightContainerTop = document.querySelector(".right-top");
 let rightContainerBottom = document.querySelector(".right-bottom");
 let APIkey = "c7e0e04a00149ed8c81b5f6dfbaa9ac7";
-
+let cityName = ""
 //prevent page for refreshing
 let formSubmitHandler = function (event) {
   event.preventDefault();
 
   //get value from input element
-  let cityName = cityNameEl.value.trim();
+  cityName = cityNameEl.value.trim();
   console.log(cityName);
 
   if (cityName) {
@@ -36,6 +36,7 @@ let locationFunction = function (cityName) {
     let lat = data[0].lat;
     let lon = data[0].lon;
     getWeatherReport(lat, lon);
+    forecast(lat, lon);
   });
 };
 
@@ -61,12 +62,13 @@ let getWeatherReport = function (lat, lon) {
       let uvIndex = data.current.uvi;
       console.log(uvIndex)
 
-      displayWeatherReport(weatherIcon, temperature, humidity, windSpeed, uvIndex);
+      displayWeatherReport(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName, rightContainerTop);
     })
  };
 
-let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName) {
-
+let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName, el) {
+  var iconurl = "http://openweathermap.org/img/w/" + weatherIcon + ".png";
+  console.log(iconurl)
 let rightTopDiv = document.createElement("div")
 
 let targetCity = document.createElement("h2")
@@ -88,7 +90,7 @@ rightTopDiv.appendChild(temp);
 rightTopDiv.appendChild(humid);
 rightTopDiv.appendChild(wind);
 rightTopDiv.appendChild(uv);
-rightContainerTop.appendChild(rightTopDiv);
+el.appendChild(rightTopDiv);
 
 if (uvIndex < 2) {
   uv.classList.add("low")
@@ -101,11 +103,12 @@ if (uvIndex < 2) {
 } else {
   uv.classList.add("Extreme")
 }
+
 };
 
 
 let forecast = function(lat, lon) {
-let forecastUrl = `api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIkey}}`
+let forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIkey}`
 
 
 fetch(forecastUrl)
@@ -116,11 +119,15 @@ fetch(forecastUrl)
     console.log(data);
 
 
+
 let forecastDiv = document.createElement("div")
+for (let i=0; i < 5; i++) {
+const temp = data.list[i]
+displayWeatherReport(temp.weather[0].icon, temp.main.temp, temp.main.humidity, temp.wind.speed, "", cityName, rightContainerBottom);
+}
 
-
-forecastDiv.appendChild()
-rightContainerBottom.appendChild(forecastDiv)
+// forecastDiv.appendChild()
+// rightContainerBottom.appendChild(forecastDiv)
 })
 
 }
