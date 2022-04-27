@@ -1,3 +1,4 @@
+
 header h1 {
 font-size: 100px;
 }
@@ -24,4 +25,14 @@ background-color: red;
 
 .extreme {
 background-color: violet;
+}
+
+.right-bottom {
+    display: flex;
+    justify-content: space-around;
+}
+
+#search-btn {
+background-color: gold;
+
 }

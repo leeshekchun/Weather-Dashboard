@@ -37,7 +37,9 @@ let locationFunction = function (cityName) {
     let lon = data[0].lon;
     getWeatherReport(lat, lon);
     forecast(lat, lon);
+    displaySearchResult();
   });
+
 };
 
 let getWeatherReport = function (lat, lon) {
@@ -73,8 +75,10 @@ let rightTopDiv = document.createElement("div")
 
 let targetCity = document.createElement("h2")
 targetCity.innerText = cityName
+let weatherImg = document.createElement("img")
+weatherImg.setAttribute("src", iconurl)
 let currentDate = document.createElement("h2")
-currentDate.innerText = new Date;
+currentDate.innerText = (new Date).toLocaleDateString();
 let temp = document.createElement("p")
 temp.innerText = "Temperature: " + temperature
 let humid = document.createElement("p")
@@ -84,6 +88,7 @@ wind.innerText = "Windspeed: " + windSpeed
 let uv = document.createElement("p")
 uv.innerText = "UV Index: " + uvIndex
 
+rightTopDiv.appendChild(weatherImg);
 rightTopDiv.appendChild(targetCity);
 rightTopDiv.appendChild(currentDate);
 rightTopDiv.appendChild(temp);
@@ -123,12 +128,19 @@ fetch(forecastUrl)
 let forecastDiv = document.createElement("div")
 for (let i=0; i < 5; i++) {
 const temp = data.list[i]
-displayWeatherReport(temp.weather[0].icon, temp.main.temp, temp.main.humidity, temp.wind.speed, "", cityName, rightContainerBottom);
+displayWeatherReport(temp.weather[0].icon, temp.main.temp, temp.main.humidity, temp.wind.speed, "", "", rightContainerBottom);
 }
 
-// forecastDiv.appendChild()
-// rightContainerBottom.appendChild(forecastDiv)
 })
 
 }
+
+let displaySearchResult = function(){
+console.log(cityName)
+let citySearched = document.createElement("li")
+citySearched.innerText = cityName
+searchHistory.appendChild(citySearched)
+}
+
+
 inputSearchEl.addEventListener("submit", formSubmitHandler);
