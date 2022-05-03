@@ -146,16 +146,17 @@ localStorage.setItem("citiesName", JSON.stringify(resultCities));
 }
 }
 
-let displaySearchResult = function(citiesName) {
-  
+let displaySearchResult = function(resultCities) {
+// var resultCities = getcities()
+// console.log(resultCities)
 let displayResult = document.createElement("li")
-for (let i = 0; i < citiesName.length; i++) {
-displayResult.innerText = citiesName[i]
-console.log(citiesName)               
+for (let i = 0; i < resultCities.length; i++) {
+displayResult.innerText = resultCities[i]
+              
 searchHistory.appendChild(displayResult)
 }
 getcities(citiesName)
 }
 
-// displaySearchResult();
+displaySearchResult();
 inputSearchEl.addEventListener("submit", formSubmitHandler);
