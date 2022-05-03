@@ -4,17 +4,18 @@ let searchHistory = document.querySelector("#city-history");
 let rightContainerTop = document.querySelector(".right-top");
 let rightContainerBottom = document.querySelector(".right-bottom");
 let APIkey = "c7e0e04a00149ed8c81b5f6dfbaa9ac7";
-let cityName = ""
+let globalCityName = ""
+
 //prevent page for refreshing
 let formSubmitHandler = function (event) {
   event.preventDefault();
 
   //get value from input element
-  cityName = cityNameEl.value.trim();
-  console.log(cityName);
+  globalCityName = cityNameEl.value.trim();
 
-  if (cityName) {
-    locationFunction(cityName);
+
+  if (globalCityName) {
+    locationFunction(globalCityName);
 
     // clear old content
     rightContainerTop.textContent = "";
@@ -24,8 +25,8 @@ let formSubmitHandler = function (event) {
   }
 };
 
-let locationFunction = function (cityName) {
-  let locationApi = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${APIkey}`;
+let locationFunction = function (globalCityName) {
+  let locationApi = `http://api.openweathermap.org/geo/1.0/direct?q=${globalCityName}&appid=${APIkey}`;
 
   fetch(locationApi)
   .then(function(response) {
@@ -36,8 +37,7 @@ let locationFunction = function (cityName) {
     let lat = data[0].lat;
     let lon = data[0].lon;
     getWeatherReport(lat, lon);
-    forecast(lat, lon);
-    displaySearchResult();
+    addSearchResult(globalCityName);
   });
 
 };
@@ -54,39 +54,41 @@ let getWeatherReport = function (lat, lon) {
       console.log(data);
 
       let weatherIcon = data.current.weather[0].icon
-      console.log(weatherIcon)
-      let temperature = data.current.temp + "°F";
-      console.log(temperature)
-      let humidity = data.current.humidity + "%";
-      console.log(humidity)
-      let windSpeed = data.current.wind_speed + "mph";
-      console.log(windSpeed)
+      let temperature = data.current.temp
+      let humidity = data.current.humidity
+      let windSpeed = data.current.wind_speed 
       let uvIndex = data.current.uvi;
-      console.log(uvIndex)
+      let currentDate = data.current.dt
 
-      displayWeatherReport(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName, rightContainerTop);
+      for (let i = 1; i < 6; i++) {
+
+      const temp = data.daily[i]
+      displayWeatherReport(temp.weather[0].icon, temp.temp.day, temp.humidity, temp.wind_speed, false, "",data.daily[i].dt, rightContainerBottom);
+      }
+
+      displayWeatherReport(weatherIcon, temperature, humidity, windSpeed, uvIndex, globalCityName, currentDate, rightContainerTop);
+
     })
  };
 
-let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName, el) {
+let displayWeatherReport = function(weatherIcon, temperature, humidity, windSpeed, uvIndex, cityName, date, container) {
   var iconurl = "http://openweathermap.org/img/w/" + weatherIcon + ".png";
-  console.log(iconurl)
-let rightTopDiv = document.createElement("div")
 
+let rightTopDiv = document.createElement("div")
 let targetCity = document.createElement("h2")
 targetCity.innerText = cityName
 let weatherImg = document.createElement("img")
 weatherImg.setAttribute("src", iconurl)
 let currentDate = document.createElement("h2")
-currentDate.innerText = (new Date).toLocaleDateString();
+currentDate.innerText = moment.unix(date).format("MM/DD/YYYY");
 let temp = document.createElement("p")
-temp.innerText = "Temperature: " + temperature
+temp.innerText = "Temperature: " + temperature + "°F";
 let humid = document.createElement("p")
-humid.innerText = "Humidity: " + humidity
+humid.innerText = "Humidity: " + humidity + "%";
 let wind = document.createElement("p")
-wind.innerText = "Windspeed: " + windSpeed
-let uv = document.createElement("p")
-uv.innerText = "UV Index: " + uvIndex
+wind.innerText = "Windspeed: " + windSpeed + "mph";
+
+
 
 rightTopDiv.appendChild(weatherImg);
 rightTopDiv.appendChild(targetCity);
@@ -94,53 +96,66 @@ rightTopDiv.appendChild(currentDate);
 rightTopDiv.appendChild(temp);
 rightTopDiv.appendChild(humid);
 rightTopDiv.appendChild(wind);
-rightTopDiv.appendChild(uv);
-el.appendChild(rightTopDiv);
-
-if (uvIndex < 2) {
-  uv.classList.add("low")
-} else if (uvIndex < 5) {
-  uv.classList.add("moderate")
-} else if (uvIndex < 7) {
-  uv.classList.add("high")
-} else if (uvIndex < 10) {
-  uv.classList.add("veryHigh")
-} else {
-  uv.classList.add("Extreme")
+if (uvIndex !== false) {
+  let uv = document.createElement("p")
+  uv.innerText = "UV Index: " + uvIndex
+  if (uvIndex < 2) {
+    uv.classList.add("low")
+  } else if (uvIndex < 5) {
+    uv.classList.add("moderate")
+  } else if (uvIndex < 7) {
+    uv.classList.add("high")
+  } else if (uvIndex < 10) {
+    uv.classList.add("veryHigh")
+  } else {
+    uv.classList.add("Extreme")
+  }
+  rightTopDiv.appendChild(uv);
 }
+container.appendChild(rightTopDiv);
+
+
+
 
 };
 
+var getcities = function() {
+  let citiesName = []
+  // get item to see if theres anything stored beforehand
+  var returnCities = JSON.parse(localStorage.getItem("citiesName"))
+  console.log(returnCities)
+  if (returnCities) {
+    citiesName = returnCities
 
-let forecast = function(lat, lon) {
-let forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${APIkey}`
-
-
-fetch(forecastUrl)
-.then(function(response){
-    return response.json();
-})
-.then(function(data){
-    console.log(data);
-
-
-
-let forecastDiv = document.createElement("div")
-for (let i=0; i < 5; i++) {
-const temp = data.list[i]
-displayWeatherReport(temp.weather[0].icon, temp.main.temp, temp.main.humidity, temp.wind.speed, "", "", rightContainerBottom);
+  }
+  console.log(citiesName)
+  return citiesName
 }
 
-})
 
-}
-
-let displaySearchResult = function(){
+let addSearchResult = function(cityName){
 console.log(cityName)
-let citySearched = document.createElement("li")
-citySearched.innerText = cityName
-searchHistory.appendChild(citySearched)
+var resultCities = getcities()
+console.log(resultCities)
+console.log(resultCities.indexOf(cityName) < 0)
+if (resultCities.indexOf(cityName) < 0) {
+  // push new search into resultCities array
+  resultCities.push(cityName)
+  console.log(resultCities)
+localStorage.setItem("citiesName", JSON.stringify(resultCities));
+}
 }
 
+let displaySearchResult = function(citiesName) {
+  
+let displayResult = document.createElement("li")
+for (let i = 0; i < citiesName.length; i++) {
+displayResult.innerText = citiesName[i]
+console.log(citiesName)               
+searchHistory.appendChild(displayResult)
+}
+getcities(citiesName)
+}
 
+// displaySearchResult();
 inputSearchEl.addEventListener("submit", formSubmitHandler);
