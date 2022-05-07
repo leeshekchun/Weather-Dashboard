@@ -20,6 +20,7 @@ let formSubmitHandler = function (event) {
     // clear old content
     rightContainerTop.textContent = "";
     rightContainerBottom.textContent = "";
+   
   } else {
     alert("Please enter a city name!");
   }
@@ -38,6 +39,7 @@ let locationFunction = function (globalCityName) {
     let lon = data[0].lon;
     getWeatherReport(lat, lon);
     addSearchResult(globalCityName);
+    displaySearchResult(getcities());
   });
 
 };
@@ -147,16 +149,31 @@ localStorage.setItem("citiesName", JSON.stringify(resultCities));
 }
 
 let displaySearchResult = function(resultCities) {
-// var resultCities = getcities()
-// console.log(resultCities)
-let displayResult = document.createElement("li")
+searchHistory.innerHTML = ""
+let displayResult = document.createElement("ul")
 for (let i = 0; i < resultCities.length; i++) {
-displayResult.innerText = resultCities[i]
-              
+let displayResultel = document.createElement("li") 
+displayResultel.innerText = resultCities[i]
+displayResultel.addEventListener("click", function() {
+  globalCityName = resultCities[i]
+  citySearchDirect()
+})
+displayResult.appendChild(displayResultel)              
+}
 searchHistory.appendChild(displayResult)
 }
-getcities(citiesName)
-}
 
-displaySearchResult();
+let citySearchDirect = function() {
+  if (globalCityName) {
+    locationFunction(globalCityName);
+
+    // clear old content
+    rightContainerTop.textContent = "";
+    rightContainerBottom.textContent = "";
+   
+  } else {
+    alert("Please enter a city name!");
+  }
+}
+displaySearchResult(getcities());
 inputSearchEl.addEventListener("submit", formSubmitHandler);
