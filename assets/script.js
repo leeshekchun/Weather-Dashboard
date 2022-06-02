@@ -34,7 +34,6 @@ let locationFunction = function (globalCityName) {
     return response.json();
   })
   .then(function(data){
-    console.log(data);
     let lat = data[0].lat;
     let lon = data[0].lon;
     getWeatherReport(lat, lon);
@@ -53,7 +52,6 @@ let getWeatherReport = function (lat, lon) {
       return response.json();
     })
     .then(function(data){
-      console.log(data);
 
       let weatherIcon = data.current.weather[0].icon
       let temperature = data.current.temp
@@ -125,25 +123,18 @@ var getcities = function() {
   let citiesName = []
   // get item to see if theres anything stored beforehand
   var returnCities = JSON.parse(localStorage.getItem("citiesName"))
-  console.log(returnCities)
   if (returnCities) {
     citiesName = returnCities
-
   }
-  console.log(citiesName)
   return citiesName
 }
 
 
 let addSearchResult = function(cityName){
-console.log(cityName)
 var resultCities = getcities()
-console.log(resultCities)
-console.log(resultCities.indexOf(cityName) < 0)
 if (resultCities.indexOf(cityName) < 0) {
   // push new search into resultCities array
   resultCities.push(cityName)
-  console.log(resultCities)
 localStorage.setItem("citiesName", JSON.stringify(resultCities));
 }
 }
