@@ -27,13 +27,13 @@ let formSubmitHandler = function (event) {
 };
 
 let locationFunction = function (globalCityName) {
-  let locationApi = `http://api.openweathermap.org/geo/1.0/direct?q=${globalCityName}&appid=${APIkey}`;
+  let locationApi = `https://api.openweathermap.org/geo/1.0/direct?q=${globalCityName}&appid=${APIkey}`;
 
   fetch(locationApi)
-  .then(function(response) {
+    .then(function(response) {
     return response.json();
   })
-  .then(function(data){
+    .then(function(data){
     let lat = data[0].lat;
     let lon = data[0].lon;
     getWeatherReport(lat, lon);
